@@ -1,6 +1,7 @@
 package com.mobarok.ads.sdk.format;
 
 import static com.mobarok.ads.sdk.util.Constant.ADMOB;
+import static com.mobarok.ads.sdk.util.Constant.FACEBOOK;
 import static com.mobarok.ads.sdk.util.Constant.ON;
 import static com.mobarok.ads.sdk.util.Constant.APPLOVIN;
 import static com.mobarok.ads.sdk.util.Constant.APPLOVIN_DISCOVERY;
@@ -18,9 +19,12 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+
 
 import com.applovin.adview.AppLovinAdView;
 import com.applovin.mediation.MaxAd;
@@ -31,9 +35,12 @@ import com.applovin.sdk.AppLovinAd;
 import com.applovin.sdk.AppLovinAdLoadListener;
 import com.applovin.sdk.AppLovinAdSize;
 import com.applovin.sdk.AppLovinSdkUtils;
+import com.facebook.ads.Ad;
+import com.facebook.ads.AdError;
+import com.facebook.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
 import com.mopub.mobileads.MoPubErrorCode;
 import com.mopub.mobileads.MoPubView;
@@ -53,6 +60,8 @@ public class BannerAd {
         private static final String TAG = "AdNetwork";
         private final Activity activity;
         private AdView adView;
+        private com.facebook.ads.AdView fbAdView;
+
         private MoPubView moPubView;
         private AppLovinAdView appLovinAdView;
 
@@ -60,6 +69,7 @@ public class BannerAd {
         private String adNetwork = "";
         private String backupAdNetwork = "";
         private String adMobBannerId = "";
+        private String facebookBannerId = "";
         private String unityBannerId = "";
         private String appLovinBannerId = "";
         private String appLovinBannerZoneId = "";
@@ -94,6 +104,11 @@ public class BannerAd {
 
         public Builder setAdMobBannerId(String adMobBannerId) {
             this.adMobBannerId = adMobBannerId;
+            return this;
+        }
+
+        public Builder setFacebookBannerId(String facebookBannerId) {
+            this.facebookBannerId = facebookBannerId;
             return this;
         }
 
@@ -360,6 +375,43 @@ public class BannerAd {
                         Log.d(TAG, adNetwork + " Banner Ad unit Id : " + mopubBannerId);
                         break;
 
+                    case FACEBOOK:
+                        RelativeLayout fbAdContainer = activity.findViewById(R.id.facebook_banner_view_container);
+                        fbAdView = new com.facebook.ads.AdView(activity, facebookBannerId, AdSize.BANNER_HEIGHT_50);
+
+                        fbAdContainer.addView(fbAdView);
+                        fbAdView.loadAd();
+                        com.facebook.ads.AdListener fbAdListener = new com.facebook.ads.AdListener() {
+                            @Override
+                            public void onError(Ad ad, AdError adError) {
+                                // Ad error callback
+                                fbAdContainer.setVisibility(View.GONE);
+                                loadBackupBannerAd();
+                            }
+
+                            @Override
+                            public void onAdLoaded(Ad ad) {
+                                // Ad loaded callback
+                                fbAdContainer.setVisibility(View.VISIBLE);
+                            }
+
+                            @Override
+                            public void onAdClicked(Ad ad) {
+                                // Ad clicked callback
+                            }
+                            @Override
+                            public void onLoggingImpression(Ad ad) {
+                                // Ad impression logged callback
+                            }
+                        };
+                        // Request an ad
+                        fbAdView.loadAd(fbAdView.buildLoadAdConfig().withAdListener(fbAdListener).build());
+
+                        break;
+
+
+
+
                     case NONE:
                         //do nothing
                         break;
@@ -591,6 +643,43 @@ public class BannerAd {
                         });
                         Log.d(TAG, adNetwork + " Banner Ad unit Id : " + mopubBannerId);
                         break;
+
+
+
+                    case FACEBOOK:
+                        RelativeLayout fbAdContainer = activity.findViewById(R.id.facebook_banner_view_container);
+                        fbAdView = new com.facebook.ads.AdView(activity, facebookBannerId, AdSize.BANNER_HEIGHT_50);
+
+                        fbAdContainer.addView(fbAdView);
+                        fbAdView.loadAd();
+                        com.facebook.ads.AdListener fbAdListener = new com.facebook.ads.AdListener() {
+                            @Override
+                            public void onError(Ad ad, AdError adError) {
+                                // Ad error callback
+                                fbAdContainer.setVisibility(View.GONE);
+                                loadBackupBannerAd();
+                            }
+
+                            @Override
+                            public void onAdLoaded(Ad ad) {
+                                // Ad loaded callback
+                                fbAdContainer.setVisibility(View.VISIBLE);
+                            }
+
+                            @Override
+                            public void onAdClicked(Ad ad) {
+                                // Ad clicked callback
+                            }
+                            @Override
+                            public void onLoggingImpression(Ad ad) {
+                                // Ad impression logged callback
+                            }
+                        };
+                        fbAdView.loadAd(fbAdView.buildLoadAdConfig().withAdListener(fbAdListener).build());
+                        break;
+
+
+
                 }
                 Log.d(TAG, "Banner Ad is enabled");
             } else {

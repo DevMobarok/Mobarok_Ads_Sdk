@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     NativeAd.Builder nativeAd;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 .setAppLovinBannerId(APPLOVIN_BANNER_ID)
                 .setAppLovinBannerZoneId(APPLOVIN_BANNER_ZONE_ID)
                 .setMopubBannerId(MOPUB_BANNER_ID)
+                .setFacebookBannerId("IMG_16_9_APP_INSTALL#YOUR_PLACEMENT_ID")
                 .setDarkTheme(false)
                 .build();
 
@@ -87,7 +89,8 @@ public class MainActivity extends AppCompatActivity {
                 .setAppLovinInterstitialId(APPLOVIN_INTERSTITIAL_ID)
                 .setAppLovinInterstitialZoneId(APPLOVIN_INTERSTITIAL_ZONE_ID)
                 .setMopubInterstitialId(MOPUB_INTERSTITIAL_ID)
-                .setClick(2)
+                .setFacebookInterstitialId("IMG_16_9_APP_INSTALL#YOUR_PLACEMENT_ID")
+                .setClick(1)
                 .build();
 
 
@@ -99,10 +102,11 @@ public class MainActivity extends AppCompatActivity {
 
         nativeAd = new NativeAd.Builder(this)
                 .setAdStatus(Constant.ON)
-                .setAdNetwork(Constant.STARTAPP)
-                .setBackupAdNetwork(Constant.ADMOB)
+                .setAdNetwork(Constant.ADMOB)
+                .setBackupAdNetwork(Constant.NONE)
                 .setAdMobNativeId(ADMOB_NATIVE_ID)
                 .setAppLovinNativeId(APPLOVIN_NATIVE_MANUAL_ID)
+                .setFacebookNativeId("IMG_16_9_APP_INSTALL#YOUR_PLACEMENT_ID")
                 .setDarkTheme(false)
                 .build();
 

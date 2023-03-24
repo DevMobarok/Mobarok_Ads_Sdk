@@ -19,6 +19,21 @@
             android:visibility="gone"
             app:gnt_template_type="@layout/gnt_admob_medium_template_view" />
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <com.facebook.ads.NativeAdLayout
+                android:id="@+id/native_ad_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+        </ScrollView>
+
+
+
         <include
             android:id="@+id/startapp_native_ad_container"
             layout="@layout/gnt_startapp_medium_template_view"

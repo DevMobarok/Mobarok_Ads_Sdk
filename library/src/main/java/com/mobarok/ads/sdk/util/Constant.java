@@ -5,6 +5,8 @@ public class Constant {
     public static final String ON = "1";
     public static final String OFF = "2";
     public static final String ADMOB = "admob";
+
+    public static final String FACEBOOK = "facebook";
     public static final String STARTAPP = "startapp";
     public static final String UNITY = "unity";
     public static final String APPLOVIN = "applovin";

@@ -151,10 +151,10 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-**### Implement the interstitial Ad**
+### **Implement the interstitial Ad**
 
 
-**Step 2: Init the variable in your Activity.java code**
+**Step 1: Init the variable in your Activity.java code**
 
 public class MainActivity extends AppCompatActivity {
 

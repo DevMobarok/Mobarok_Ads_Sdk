@@ -1,6 +1,7 @@
 package com.mobarok.ads.sdk.format;
 
 import static com.mobarok.ads.sdk.util.Constant.ADMOB;
+import static com.mobarok.ads.sdk.util.Constant.FACEBOOK;
 import static com.mobarok.ads.sdk.util.Constant.ON;
 import static com.mobarok.ads.sdk.util.Constant.APPLOVIN;
 import static com.mobarok.ads.sdk.util.Constant.APPLOVIN_DISCOVERY;
@@ -28,6 +29,8 @@ import com.applovin.sdk.AppLovinAd;
 import com.applovin.sdk.AppLovinAdLoadListener;
 import com.applovin.sdk.AppLovinAdSize;
 import com.applovin.sdk.AppLovinSdk;
+import com.facebook.ads.AdError;
+import com.facebook.ads.InterstitialAdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
@@ -53,6 +56,8 @@ public class InterstitialAd {
         private static final String TAG = "AdNetwork";
         private final Activity activity;
         private com.google.android.gms.ads.interstitial.InterstitialAd adMobInterstitialAd;
+
+        private com.facebook.ads.InterstitialAd facebookInterstitialAd;
         private StartAppAd startAppAd;
         private MaxInterstitialAd maxInterstitialAd;
         public MoPubInterstitial mInterstitial;
@@ -65,6 +70,7 @@ public class InterstitialAd {
         private String adNetwork = "";
         private String backupAdNetwork = "";
         private String adMobInterstitialId = "";
+        private String facebookInterstitialId = "";
         private String unityInterstitialId = "";
         private String appLovinInterstitialId = "";
         private String appLovinInterstitialZoneId = "";
@@ -104,6 +110,11 @@ public class InterstitialAd {
 
         public Builder setAdMobInterstitialId(String adMobInterstitialId) {
             this.adMobInterstitialId = adMobInterstitialId;
+            return this;
+        }
+
+        public Builder setFacebookInterstitialId(String facebookInterstitialId) {
+            this.facebookInterstitialId = facebookInterstitialId;
             return this;
         }
 
@@ -159,6 +170,8 @@ public class InterstitialAd {
                                     @Override
                                     public void onAdFailedToShowFullScreenContent(@NonNull com.google.android.gms.ads.AdError adError) {
                                         Log.d(TAG, "The ad failed to show.");
+                                        if (adNetwork.contains(NONE))loadInterstitialAd();
+                                        else loadBackupInterstitialAd();
                                     }
 
                                     @Override
@@ -191,7 +204,8 @@ public class InterstitialAd {
                             @Override
                             public void onFailedToReceiveAd(@Nullable Ad ad) {
                                 Log.d(TAG, "Failed to load Startapp Interstitial Ad");
-                                loadBackupInterstitialAd();
+                                if (adNetwork.contains(NONE))loadInterstitialAd();
+                                else loadBackupInterstitialAd();
                             }
                         });
                         break;
@@ -206,7 +220,8 @@ public class InterstitialAd {
                             @Override
                             public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError error, String message) {
                                 Log.e(TAG, "Unity Ads failed to load ad for " + placementId + " with error: [" + error + "] " + message);
-                                loadBackupInterstitialAd();
+                                if (adNetwork.contains(NONE))loadInterstitialAd();
+                                else loadBackupInterstitialAd();
                             }
                         });
                         break;
@@ -240,7 +255,8 @@ public class InterstitialAd {
                                 retryAttempt++;
                                 long delayMillis = TimeUnit.SECONDS.toMillis((long) Math.pow(2, Math.min(6, retryAttempt)));
                                 new Handler().postDelayed(() -> maxInterstitialAd.loadAd(), delayMillis);
-                                loadBackupInterstitialAd();
+                                if (adNetwork.contains(NONE))loadInterstitialAd();
+                                else loadBackupInterstitialAd();
                                 Log.d(TAG, "failed to load AppLovin Interstitial");
                             }
 
@@ -267,7 +283,8 @@ public class InterstitialAd {
 
                             @Override
                             public void failedToReceiveAd(int errorCode) {
-                                loadBackupInterstitialAd();
+                                if (adNetwork.contains(NONE))loadInterstitialAd();
+                                else loadBackupInterstitialAd();
                             }
                         });
                         appLovinInterstitialAdDialog = AppLovinInterstitialAd.create(AppLovinSdk.getInstance(activity), activity);
@@ -284,7 +301,8 @@ public class InterstitialAd {
                             @Override
                             public void onInterstitialFailed(MoPubInterstitial moPubInterstitial, MoPubErrorCode moPubErrorCode) {
                                 Log.d(TAG, "failed to load Mopub Interstitial Ad");
-                                loadBackupInterstitialAd();
+                                if (adNetwork.contains(NONE))loadInterstitialAd();
+                                else loadBackupInterstitialAd();
                             }
 
                             @Override
@@ -304,6 +322,47 @@ public class InterstitialAd {
                         });
                         mInterstitial.load();
                         break;
+
+                    case FACEBOOK:
+                        facebookInterstitialAd = new com.facebook.ads.InterstitialAd(activity, facebookInterstitialId);
+                        InterstitialAdListener interstitialAdListener = new InterstitialAdListener() {
+                            @Override
+                            public void onInterstitialDisplayed(com.facebook.ads.Ad ad) {
+
+                            }
+
+                            @Override
+                            public void onInterstitialDismissed(com.facebook.ads.Ad ad) {
+                                facebookInterstitialAd.loadAd();
+                            }
+
+                            @Override
+                            public void onError(com.facebook.ads.Ad ad, AdError adError) {
+                                if (adNetwork.contains(NONE))loadInterstitialAd();
+                                else loadBackupInterstitialAd();
+                            }
+
+                            @Override
+                            public void onAdLoaded(com.facebook.ads.Ad ad) {
+                            }
+
+                            @Override
+                            public void onAdClicked(com.facebook.ads.Ad ad) {
+
+                            }
+
+                            @Override
+                            public void onLoggingImpression(com.facebook.ads.Ad ad) {
+
+                            }
+                        };
+                        facebookInterstitialAd.loadAd(
+                                facebookInterstitialAd.buildLoadAdConfig()
+                                        .withAdListener(interstitialAdListener)
+                                        .build()
+                        );
+                        break;
+
                 }
             }
         }
@@ -466,6 +525,44 @@ public class InterstitialAd {
                         mInterstitial.load();
                         break;
 
+                    case FACEBOOK:
+                        facebookInterstitialAd = new com.facebook.ads.InterstitialAd(activity, facebookInterstitialId);
+                        InterstitialAdListener interstitialAdListener = new InterstitialAdListener() {
+                            @Override
+                            public void onInterstitialDisplayed(com.facebook.ads.Ad ad) {
+
+                            }
+
+                            @Override
+                            public void onInterstitialDismissed(com.facebook.ads.Ad ad) {
+                                facebookInterstitialAd.loadAd();
+                            }
+
+                            @Override
+                            public void onError(com.facebook.ads.Ad ad, AdError adError) {
+                            }
+
+                            @Override
+                            public void onAdLoaded(com.facebook.ads.Ad ad) {
+                            }
+
+                            @Override
+                            public void onAdClicked(com.facebook.ads.Ad ad) {
+
+                            }
+
+                            @Override
+                            public void onLoggingImpression(com.facebook.ads.Ad ad) {
+
+                            }
+                        };
+                        facebookInterstitialAd.loadAd(
+                                facebookInterstitialAd.buildLoadAdConfig()
+                                        .withAdListener(interstitialAdListener)
+                                        .build()
+                        );
+                        break;
+
                     case NONE:
                         //do nothing
                         break;
@@ -548,6 +645,13 @@ public class InterstitialAd {
                             Log.d(TAG, "show " + adNetwork + " Interstitial Id : " + mopubInterstitialId);
                             Log.d(TAG, "counter : " + counter);
                             break;
+                        case FACEBOOK:
+                            if (facebookInterstitialAd.isAdLoaded()){
+                                facebookInterstitialAd.show();
+                            }else {
+                                showBackupInterstitialAd();
+                            }
+                            break;
                     }
                     counter = 1;
                 } else {
@@ -613,6 +717,12 @@ public class InterstitialAd {
                     case MOPUB:
                         if (mInterstitial.isReady()) {
                             mInterstitial.show();
+                        }
+                        break;
+
+                    case FACEBOOK:
+                        if (facebookInterstitialAd.isAdLoaded()){
+                            facebookInterstitialAd.show();
                         }
                         break;
 

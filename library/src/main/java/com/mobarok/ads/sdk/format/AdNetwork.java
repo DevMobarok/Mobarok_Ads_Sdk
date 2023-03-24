@@ -1,6 +1,7 @@
 package com.mobarok.ads.sdk.format;
 
 import static com.mobarok.ads.sdk.util.Constant.ADMOB;
+import static com.mobarok.ads.sdk.util.Constant.FACEBOOK;
 import static com.mobarok.ads.sdk.util.Constant.ON;
 import static com.mobarok.ads.sdk.util.Constant.APPLOVIN;
 import static com.mobarok.ads.sdk.util.Constant.APPLOVIN_DISCOVERY;
@@ -12,9 +13,11 @@ import static com.mobarok.ads.sdk.util.Constant.UNITY;
 
 import android.app.Activity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.applovin.sdk.AppLovinMediationProvider;
 import com.applovin.sdk.AppLovinSdk;
+import com.facebook.ads.AudienceNetworkAds;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.AdapterStatus;
 import com.mopub.common.MoPub;
@@ -103,6 +106,7 @@ public class AdNetwork {
 
         public void initAds() {
             if (adStatus.equals(ON)) {
+
                 switch (adNetwork) {
                     case ADMOB:
                         MobileAds.initialize(activity, initializationStatus -> {
@@ -114,6 +118,7 @@ public class AdNetwork {
                             }
                         });
                         AudienceNetworkInitializeHelper.initialize(activity);
+
                         break;
                     case STARTAPP:
                         StartAppSDK.init(activity, startappAppId, false);
@@ -121,6 +126,7 @@ public class AdNetwork {
                         StartAppAd.disableSplash();
                         StartAppSDK.setUserConsent(activity, "pas", System.currentTimeMillis(), true);
                         break;
+
                     case UNITY:
                         UnityAds.initialize(activity.getApplicationContext(), unityGameId, debug, new IUnityAdsInitializationListener() {
                             @Override
@@ -153,8 +159,15 @@ public class AdNetwork {
                         configBuilder.withMediatedNetworkConfiguration(FacebookBanner.class.getName(), facebookBanner);
                         MoPub.initializeSdk(activity, configBuilder.build(), initSdkListener());
                         break;
+
+                    case FACEBOOK:
+                        AudienceNetworkAds.initialize(activity);
+                        break;
+
                 }
                 Log.d(TAG, "[" + adNetwork + "] is selected as Primary Ads");
+
+
             }
         }
 
@@ -211,9 +224,15 @@ public class AdNetwork {
                         MoPub.initializeSdk(activity, configBuilder.build(), initSdkListener());
                         break;
 
+                    case FACEBOOK:
+                        AudienceNetworkAds.initialize(activity);
+                        break;
+
+
                     case NONE:
                         //do nothing
                         break;
+
                 }
                 Log.d(TAG, "[" + backupAdNetwork + "] is selected as Backup Ads");
             }

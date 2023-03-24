@@ -1,6 +1,7 @@
 package com.mobarok.ads.sdk.format;
 
 import static com.mobarok.ads.sdk.util.Constant.ADMOB;
+import static com.mobarok.ads.sdk.util.Constant.FACEBOOK;
 import static com.mobarok.ads.sdk.util.Constant.ON;
 import static com.mobarok.ads.sdk.util.Constant.APPLOVIN;
 import static com.mobarok.ads.sdk.util.Constant.APPLOVIN_MAX;
@@ -275,6 +276,11 @@ public class NativeAdFragment {
                         } else {
                             Log.d(TAG, "AppLovin Native Ad has been loaded");
                         }
+                        break;
+
+
+                    case FACEBOOK:
+                        //do nothing
                         break;
 
                     case UNITY:
