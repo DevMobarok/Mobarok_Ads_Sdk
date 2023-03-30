@@ -17,7 +17,7 @@ Implement this in your project
 **Step 2. Add the dependency**
 
 	dependencies {
-	        implementation 'com.github.DevMobarok:Mobarok_Ads_Sdk:1.0.0'
+	        implementation 'com.github.DevMobarok:Mobarok_Ads_Sdk:1.0.1'
 	}
 
 
